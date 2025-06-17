@@ -30,7 +30,7 @@ The project demonstrates the implementation of a full-stack application using:
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
+git clone <>
 cd todo-app
 ```
 
@@ -51,64 +51,6 @@ REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 npm start
 ```
 
-## Deployment Guide
-
-You can deploy this application using various platforms. Here are the steps for some popular options:
-
-### Deploying to Vercel (Recommended)
-
-1. Install Vercel CLI:
-```bash
-npm install -g vercel
-```
-
-2. Deploy the application:
-```bash
-vercel
-```
-
-3. Follow the prompts to complete deployment.
-
-### Deploying to Netlify
-
-1. Create a `netlify.toml` file in the root directory:
-```toml
-[build]
-  command = "npm run build"
-  publish = "build"
-```
-
-2. Deploy using Netlify CLI or connect your GitHub repository through the Netlify dashboard.
-
-### Deploying to GitHub Pages
-
-1. Add homepage to package.json:
-```json
-{
-  "homepage": "https://yourusername.github.io/todo-app"
-}
-```
-
-2. Install gh-pages:
-```bash
-npm install --save-dev gh-pages
-```
-
-3. Add deploy scripts to package.json:
-```json
-{
-  "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-  }
-}
-```
-
-4. Deploy:
-```bash
-npm run deploy
-```
-
 ## Environment Setup
 
 The application requires the following environment variables:
@@ -123,14 +65,16 @@ REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 The Supabase database uses the following schema for todos:
 
 ```sql
-todos (
-  id: uuid (primary key)
-  title: text (required)
-  description: text
-  completed: boolean
-  created_at: timestamp with time zone
-  user_id: uuid (foreign key to auth.users)
-)
+CREATE TABLE todos (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+ALTER TABLE todos DISABLE ROW LEVEL SECURITY;
 ```
 
 ## Contributing
