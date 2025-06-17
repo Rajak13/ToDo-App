@@ -1,0 +1,106 @@
+.todo-form {
+    background: var(--white);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1rem;
+}
+  
+.todo-form form {
+    display: flex;
+    gap: 0.5rem;
+}
+  
+.todo-form input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--text-light);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: var(--white);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+  
+.todo-form input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.1);
+}
+  
+.todo-form button {
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: var(--white);
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+  
+.todo-form button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+  
+.todo-form button:active {
+    transform: translateY(0);
+}
+  
+.form-group {
+    margin-bottom: 1rem;
+}
+  
+.todo-textarea {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--background-color);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    background: var(--background-color);
+    resize: vertical;
+    min-height: 80px;
+}
+  
+.todo-textarea:focus {
+    border-color: var(--primary-color);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+  
+.add-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}
+  
+.add-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+  
+.add-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+  
+@media (max-width: 768px) {
+    .todo-form {
+        padding: 1.5rem;
+    }
+    
+    .add-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

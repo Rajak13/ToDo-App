@@ -1,0 +1,40 @@
+.todo-list {
+    background: var(--white);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+  
+  .todo-section {
+    padding: 1rem;
+  }
+  
+  .todo-section:not(:last-child) {
+    border-bottom: 1px solid var(--background-color);
+  }
+  
+  .section-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .section-title::before {
+    content: '';
+    width: 3px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 2px;
+  }
+
+  .empty-section {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-light);
+    font-style: italic;
+  }
