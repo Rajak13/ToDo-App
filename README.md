@@ -1,6 +1,7 @@
 # React Todo App - Internship Day 1 Project
 
 This Todo application was developed as part of the React internship program's first daily task. It's a modern, responsive todo management system built with React and Supabase, featuring a clean and intuitive user interface.
+The project can be accessed at https://razzaq-todo-app.vercel.app/
 
 ## Project Overview
 
@@ -30,7 +31,7 @@ The project demonstrates the implementation of a full-stack application using:
 
 1. Clone the repository:
 ```bash
-git clone <>
+git clone https://github.com/Rajak13/ToDo-App.git
 cd todo-app
 ```
 
