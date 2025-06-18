@@ -1,7 +1,8 @@
 # React Todo App with Authentication
 
--This Todo application is a modern, responsive task management system built with React and Supabase. It features a clean user interface with authentication and real-time data synchronization.
--This project can be accessed at : https://razzaq-todo-app.vercel.app/
+- This Todo application is a modern, responsive task management system built with React and Supabase. It features a clean user interface with authentication and real-time data synchronization.
+- This project can be accessed at : https://razzaq-todo-app.vercel.app/
+  
 ## Project Overview
 
 The project demonstrates the implementation of a full-stack application using:
