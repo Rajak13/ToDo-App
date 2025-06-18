@@ -1,0 +1,125 @@
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--background-light);
+  border: 3px solid var(--primary-color);
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-size: 2rem;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  color: var(--white);
+  font-size: 1.5rem;
+}
+
+.avatar-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.file-input {
+  display: none;
+}
+
+.avatar-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-button.upload {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.avatar-button.upload:hover {
+  background-color: var(--primary-dark);
+}
+
+.avatar-button.remove {
+  background-color: var(--error-color);
+  color: var(--white);
+}
+
+.avatar-button.remove:hover {
+  background-color: var(--error-dark);
+}
+
+.avatar-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.avatar-error {
+  color: var(--error-color);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .avatar-container {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .avatar-actions {
+    flex-direction: column;
+  }
+} 
