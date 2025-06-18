@@ -1,24 +1,71 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { useRole } from '../context/RoleContext'
 import { supabase } from '../services/supabaseClient'
 
 export const useTodos = () => {
     const [todos, setTodos] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const { user } = useAuth()
+    const { profile } = useRole()
 
-    // Fetch all todos
+    // Check if user can perform action based on role
+    const canPerformAction = (action, todoUserId = null) => {
+        if (!profile) return false;
+
+        switch (action) {
+            case 'create':
+                return true; // All authenticated users can create todos
+            case 'read':
+                return true; // Handled by RLS policies
+            case 'update':
+            case 'delete':
+                // Admin can do anything
+                if (profile.role === 'admin') return true;
+                // Manager can modify their own todos and regular users' todos
+                if (profile.role === 'manager') {
+                    return todoUserId === user.id || profile.role === 'user';
+                }
+                // Regular users can only modify their own todos
+                return todoUserId === user.id;
+            default:
+                return false;
+        }
+    };
+
+    // Fetch all todos based on user role
     const fetchTodos = async () => {
         try {
             setLoading(true)
-            const { data, error } = await supabase
+            setError(null)
+
+            if (!user || !profile) {
+                throw new Error('Authentication required')
+            }
+
+            let query = supabase
                 .from('todos')
-                .select('*')
+                .select('*, profiles:user_id(role)')
                 .order('created_at', { ascending: false })
 
-            if (error) throw error
+            // Filter based on role
+            if (profile.role === 'user') {
+                // Users can only see their own todos
+                query = query.eq('user_id', user.id)
+            } else if (profile.role === 'manager') {
+                // Managers can see their own todos and todos of regular users
+                query = query.or(`user_id.eq.${user.id},profiles.role.eq.user`)
+            }
+            // Admins can see all todos (no filter)
+
+            const { data, error: todosError } = await query
+
+            if (todosError) throw todosError
             setTodos(data || [])
-        } catch (error) {
-            setError(error.message)
+        } catch (err) {
+            setError(err.message)
+            return { success: false, error: err.message }
         } finally {
             setLoading(false)
         }
@@ -27,9 +74,30 @@ export const useTodos = () => {
     // Create new todo
     const createTodo = async (title, description = '') => {
         try {
+            if (!user) throw new Error('Authentication required')
+            if (!canPerformAction('create')) {
+                throw new Error('You do not have permission to create todos')
+            }
+
+            if (!title.trim()) {
+                throw new Error('Title is required')
+            }
+
+            if (title.length > 100) {
+                throw new Error('Title must be less than 100 characters')
+            }
+
+            if (description.length > 500) {
+                throw new Error('Description must be less than 500 characters')
+            }
+
             const { data, error } = await supabase
                 .from('todos')
-                .insert([{ title, description }])
+                .insert([{ 
+                    title: title.trim(), 
+                    description: description.trim(), 
+                    user_id: user.id 
+                }])
                 .select()
 
             if (error) throw error
@@ -44,9 +112,35 @@ export const useTodos = () => {
     // Update todo
     const updateTodo = async (id, updates) => {
         try {
+            if (!user) throw new Error('Authentication required')
+
+            const todo = todos.find(t => t.id === id)
+            if (!todo) throw new Error('Todo not found')
+
+            if (!canPerformAction('update', todo.user_id)) {
+                throw new Error('You do not have permission to update this todo')
+            }
+
+            if (updates.title !== undefined) {
+                if (!updates.title.trim()) {
+                    throw new Error('Title is required')
+                }
+                if (updates.title.length > 100) {
+                    throw new Error('Title must be less than 100 characters')
+                }
+            }
+
+            if (updates.description !== undefined && updates.description.length > 500) {
+                throw new Error('Description must be less than 500 characters')
+            }
+
             const { data, error } = await supabase
                 .from('todos')
-                .update(updates)
+                .update({
+                    ...updates,
+                    title: updates.title?.trim(),
+                    description: updates.description?.trim()
+                })
                 .eq('id', id)
                 .select()
 
@@ -64,6 +158,15 @@ export const useTodos = () => {
     // Delete todo
     const deleteTodo = async (id) => {
         try {
+            if (!user) throw new Error('Authentication required')
+
+            const todo = todos.find(t => t.id === id)
+            if (!todo) throw new Error('Todo not found')
+
+            if (!canPerformAction('delete', todo.user_id)) {
+                throw new Error('You do not have permission to delete this todo')
+            }
+
             const { error } = await supabase
                 .from('todos')
                 .delete()
@@ -83,9 +186,40 @@ export const useTodos = () => {
         return updateTodo(id, { completed })
     }
 
+    // Subscribe to realtime changes
     useEffect(() => {
-        fetchTodos()
-    }, [])
+        if (!user) return
+
+        const subscription = supabase
+            .channel('public:todos')
+            .on('postgres_changes', 
+                { 
+                    event: '*', 
+                    schema: 'public',
+                    table: 'todos',
+                }, 
+                (payload) => {
+                    // Only refresh if the change is relevant to the user's role
+                    if (profile.role === 'admin' || 
+                        payload.new.user_id === user.id || 
+                        (profile.role === 'manager' && payload.new.role === 'user')) {
+                        fetchTodos()
+                    }
+                }
+            )
+            .subscribe()
+
+        return () => {
+            subscription.unsubscribe()
+        }
+    }, [user, profile])
+
+    // Initial fetch
+    useEffect(() => {
+        if (user && profile) {
+            fetchTodos()
+        }
+    }, [user, profile])
 
     return {
         todos,
@@ -95,6 +229,7 @@ export const useTodos = () => {
         updateTodo,
         deleteTodo,
         toggleTodo,
-        refetch: fetchTodos
+        refetch: fetchTodos,
+        canPerformAction
     }
 }

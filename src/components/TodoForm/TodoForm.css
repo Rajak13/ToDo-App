@@ -44,13 +44,13 @@
   
 .todo-form button:active {
     transform: translateY(0);
-}
+  }
   
-.form-group {
+  .form-group {
     margin-bottom: 1rem;
-}
+  }
   
-.todo-textarea {
+  .todo-textarea {
     width: 100%;
     padding: 1rem;
     font-size: 1rem;
@@ -60,15 +60,15 @@
     background: var(--background-color);
     resize: vertical;
     min-height: 80px;
-}
+  }
   
-.todo-textarea:focus {
+  .todo-textarea:focus {
     border-color: var(--primary-color);
     background: var(--white);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
+  }
   
-.add-btn {
+  .add-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -80,27 +80,27 @@
     font-weight: 600;
     transition: all 0.3s ease;
     box-shadow: var(--shadow);
-}
+  }
   
-.add-btn:hover {
+  .add-btn:hover {
     background: var(--primary-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-}
+  }
   
-.add-btn:disabled {
+  .add-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
-}
+  }
   
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
     .todo-form {
-        padding: 1.5rem;
+      padding: 1.5rem;
     }
     
     .add-btn {
-        width: 100%;
-        justify-content: center;
+      width: 100%;
+      justify-content: center;
     }
-}
+  }
