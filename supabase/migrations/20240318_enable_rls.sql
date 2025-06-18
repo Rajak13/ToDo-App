@@ -1,7 +1,0 @@
--- Enable Row Level Security
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
-
--- Ensure tables require authentication
-ALTER TABLE profiles FORCE ROW LEVEL SECURITY;
-ALTER TABLE todos FORCE ROW LEVEL SECURITY; 
