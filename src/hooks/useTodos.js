@@ -44,34 +44,72 @@ export const useTodos = () => {
                 throw new Error('Authentication required')
             }
 
+            // Handle manager role separately with two queries
+            if (profile.role === 'manager') {
+                try {
+                    // Query for the manager's own todos
+                    const { data: myTodos, error: myTodosError } = await supabase
+                        .from('todos')
+                        .select('*, profiles:user_id(role)')
+                        .eq('user_id', user.id)
+                        .order('created_at', { ascending: false });
+                    
+                    if (myTodosError) throw myTodosError;
+                    
+                    // Query for all todos created by users with 'user' role
+                    const { data: userTodos, error: userTodosError } = await supabase
+                        .from('todos')
+                        .select('*, profiles:user_id(role)')
+                        .neq('user_id', user.id) // Not the manager's own todos
+                        .order('created_at', { ascending: false });
+                    
+                    if (userTodosError) throw userTodosError;
+                    
+                    // Filter user todos for those that belong to users with 'user' role
+                    // We'll filter in JS since the join condition is complex
+                    const filteredUserTodos = userTodos.filter(todo => 
+                        todo.profiles && todo.profiles.role === 'user'
+                    );
+                    
+                    // Combine results
+                    const combinedData = [
+                        ...(myTodos || []),
+                        ...(filteredUserTodos || [])
+                    ];
+                    
+                    setTodos(combinedData);
+                } catch (err) {
+                    setError(err.message);
+                    return { success: false, error: err.message };
+                } finally {
+                    setLoading(false);
+                }
+                return { success: true };
+            }
+            
+            // Handle admin and regular user roles with a single query
             let query = supabase
                 .from('todos')
                 .select('*, profiles:user_id(role)')
-                .order('created_at', { ascending: false })
+                .order('created_at', { ascending: false });
 
             // Filter based on role
             if (profile.role === 'user') {
                 // Users can only see their own todos
-                query = query.eq('user_id', user.id)
-            } else if (profile.role === 'manager') {
-                // Managers can see their own todos and todos of regular users
-                // Use separate filter conditions instead of a single or statement
-                query = query.or([
-                    `user_id.eq.${user.id}`,
-                    `profiles.role.eq.user`
-                ])
+                query = query.eq('user_id', user.id);
             }
             // Admins can see all todos (no filter)
 
-            const { data, error: todosError } = await query
+            const { data, error: todosError } = await query;
 
-            if (todosError) throw todosError
-            setTodos(data || [])
+            if (todosError) throw todosError;
+            setTodos(data || []);
+            return { success: true };
         } catch (err) {
-            setError(err.message)
-            return { success: false, error: err.message }
+            setError(err.message);
+            return { success: false, error: err.message };
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
