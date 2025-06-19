@@ -55,7 +55,11 @@ export const useTodos = () => {
                 query = query.eq('user_id', user.id)
             } else if (profile.role === 'manager') {
                 // Managers can see their own todos and todos of regular users
-                query = query.or(`user_id.eq.${user.id},profiles.role.eq.user`)
+                // Use separate filter conditions instead of a single or statement
+                query = query.or([
+                    `user_id.eq.${user.id}`,
+                    `profiles.role.eq.user`
+                ])
             }
             // Admins can see all todos (no filter)
 
@@ -202,7 +206,7 @@ export const useTodos = () => {
                     // Only refresh if the change is relevant to the user's role
                     if (profile.role === 'admin' || 
                         payload.new.user_id === user.id || 
-                        (profile.role === 'manager' && payload.new.role === 'user')) {
+                        (profile.role === 'manager')) {
                         fetchTodos()
                     }
                 }
